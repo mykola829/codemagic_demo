@@ -31,11 +31,12 @@ workflows:
     triggering:
       events:
         - push
-        - pull_request
       branch_patterns:
         - pattern: '*'
           include: true
           source: true
+      # Новий push скасовує попередні незавершені білди тієї самої гілки
+      cancel_previous_builds: true
     scripts:
       - *get_packages
       - *analyze
