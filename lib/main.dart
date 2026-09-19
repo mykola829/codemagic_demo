@@ -31,6 +31,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _increment() => setState(() => _counter++);
 
+  void _reset() => setState(() => _counter = 0);
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -48,6 +50,12 @@ class _HomeScreenState extends State<HomeScreen> {
             Text('CI/CD playground', style: theme.textTheme.headlineSmall),
             const SizedBox(height: 8),
             Text('Натискань: $_counter', style: theme.textTheme.titleMedium),
+            const SizedBox(height: 16),
+            TextButton.icon(
+              onPressed: _counter == 0 ? null : _reset,
+              icon: const Icon(Icons.refresh),
+              label: const Text('Скинути'),
+            ),
           ],
         ),
       ),

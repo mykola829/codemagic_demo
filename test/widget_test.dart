@@ -16,4 +16,24 @@ void main() {
     expect(find.text('Натискань: 0'), findsNothing);
     expect(find.text('Натискань: 1'), findsOneWidget);
   });
+
+  testWidgets('кнопка "Скинути" обнуляє лічильник', (tester) async {
+    await tester.pumpWidget(const CodemagicDemoApp());
+
+    final resetButton = find.widgetWithText(TextButton, 'Скинути');
+
+    // Спочатку лічильник на нулі — кнопка неактивна.
+    expect(tester.widget<TextButton>(resetButton).onPressed, isNull);
+
+    await tester.tap(find.byIcon(Icons.add));
+    await tester.pump();
+    await tester.tap(find.byIcon(Icons.add));
+    await tester.pump();
+    expect(find.text('Натискань: 2'), findsOneWidget);
+
+    await tester.tap(resetButton);
+    await tester.pump();
+
+    expect(find.text('Натискань: 0'), findsOneWidget);
+  });
 }
