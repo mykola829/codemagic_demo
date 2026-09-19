@@ -16,12 +16,13 @@ flutter analyze
 Конфіг — `codemagic.yaml` у корені репо. Codemagic сам його підхоплює, коли підключити репозиторій
 (Apps → Add application → підключити Git-провайдер → обрати репо → "Use codemagic.yaml").
 
-Два workflow, обидва на Linux-інстансах (розробка ведеться з Windows, iOS-збірки не потрібні):
+Два workflow, обидва збирають тільки Android (розробка ведеться з Windows, iOS-білди не потрібні).
+Інстанс — `mac_mini_m2`, бо безкоштовний план Codemagic не дає Linux-машин; на тип збірки це не впливає:
 
 | Workflow | Інстанс | Тригер | Що робить |
 |---|---|---|---|
-| `android-debug` | linux_x2 | push / PR у будь-яку гілку | analyze + test + debug APK |
-| `android-release` | linux_x2 | тег `v*` | analyze + test + release APK і AAB |
+| `android-debug` | mac_mini_m2 | push / PR у будь-яку гілку | analyze + test + debug APK |
+| `android-release` | mac_mini_m2 | тег `v*` | analyze + test + release APK і AAB |
 
 ### Наступні кроки для навчання
 
