@@ -23,7 +23,6 @@ workflows:
   # 1) Найпростіший старт: перевірки + debug APK на кожен push
   android-debug:
     name: Android · analyze + test + debug APK
-    instance_type: mac_mini_m2
     max_build_duration: 30
     environment:
       flutter: stable
@@ -49,7 +48,7 @@ workflows:
     publishing:
       email:
         recipients:
-          - mykola.romanyshyn@kindgeek.com
+          - mykola829@gmail.com
         notify:
           success: true
           failure: true
@@ -57,13 +56,12 @@ workflows:
   # 2) Release-збірка Android (без підпису — для навчання)
   android-release:
     name: Android · release APK + AAB
-    instance_type: mac_mini_m2
     max_build_duration: 45
     environment:
       flutter: stable
       java: 17
       vars:
-        PACKAGE_NAME: com.kindgeek.codemagicdemo.codemagic_demo
+        PACKAGE_NAME: com.mykola829.codemagicdemo.codemagic_demo
     cache: *flutter_cache
     triggering:
       events:

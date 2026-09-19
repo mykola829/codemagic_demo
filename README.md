@@ -17,12 +17,12 @@ flutter analyze
 (Apps → Add application → підключити Git-провайдер → обрати репо → "Use codemagic.yaml").
 
 Два workflow, обидва збирають тільки Android (розробка ведеться з Windows, iOS-білди не потрібні).
-Інстанс — `mac_mini_m2`, бо безкоштовний план Codemagic не дає Linux-машин; на тип збірки це не впливає:
+`instance_type` навмисно не заданий — Codemagic бере дефолтний інстанс, доступний поточному плану:
 
 | Workflow | Інстанс | Тригер | Що робить |
 |---|---|---|---|
-| `android-debug` | mac_mini_m2 | push / PR у будь-яку гілку | analyze + test + debug APK |
-| `android-release` | mac_mini_m2 | тег `v*` | analyze + test + release APK і AAB |
+| `android-debug` | default | push / PR у будь-яку гілку | analyze + test + debug APK |
+| `android-release` | default | тег `v*` | analyze + test + release APK і AAB |
 
 ### Наступні кроки для навчання
 
