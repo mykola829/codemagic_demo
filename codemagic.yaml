@@ -1,0 +1,115 @@
+# Codemagic CI/CD configuration
+# Docs: https://docs.codemagic.io/yaml/yaml-getting-started/
+
+definitions:
+  cache: &flutter_cache
+    cache_paths:
+      - $HOME/.pub-cache
+      - $FLUTTER_ROOT/.pub-cache
+
+  scripts:
+    - &get_packages
+      name: Get Flutter packages
+      script: flutter pub get
+    - &analyze
+      name: Static analysis
+      script: flutter analyze
+    - &test
+      name: Unit & widget tests
+      script: flutter test --machine > test-report.json
+      test_report: test-report.json
+
+workflows:
+  # 1) Найпростіший старт: перевірки + debug APK на кожен push
+  android-debug:
+    name: Android · analyze + test + debug APK
+    instance_type: linux_x2
+    max_build_duration: 30
+    environment:
+      flutter: stable
+      java: 17
+    cache: *flutter_cache
+    triggering:
+      events:
+        - push
+        - pull_request
+      branch_patterns:
+        - pattern: '*'
+          include: true
+          source: true
+    scripts:
+      - *get_packages
+      - *analyze
+      - *test
+      - name: Build debug APK
+        script: flutter build apk --debug
+    artifacts:
+      - build/**/outputs/**/*.apk
+      - flutter_drive.log
+    publishing:
+      email:
+        recipients:
+          - mykola.romanyshyn@kindgeek.com
+        notify:
+          success: true
+          failure: true
+
+  # 2) Release-збірка Android (без підпису — для навчання)
+  android-release:
+    name: Android · release APK + AAB
+    instance_type: linux_x2
+    max_build_duration: 45
+    environment:
+      flutter: stable
+      java: 17
+      vars:
+        PACKAGE_NAME: com.kindgeek.codemagicdemo.codemagic_demo
+    cache: *flutter_cache
+    triggering:
+      events:
+        - tag
+      tag_patterns:
+        - pattern: 'v*'
+          include: true
+    scripts:
+      - *get_packages
+      - *analyze
+      - *test
+      - name: Build release APK & AAB
+        script: |
+          flutter build apk --release --build-number=$PROJECT_BUILD_NUMBER
+          flutter build appbundle --release --build-number=$PROJECT_BUILD_NUMBER
+    artifacts:
+      - build/**/outputs/**/*.apk
+      - build/**/outputs/**/*.aab
+      - build/**/outputs/**/mapping.txt
+    publishing:
+      email:
+        recipients:
+          - mykola.romanyshyn@kindgeek.com
+
+  # 3) iOS без code signing — щоб побачити mac-інстанс у дії
+  ios-unsigned:
+    name: iOS · unsigned build
+    instance_type: mac_mini_m2
+    max_build_duration: 45
+    environment:
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+    cache: *flutter_cache
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: main
+          include: true
+          source: true
+    scripts:
+      - *get_packages
+      - *analyze
+      - *test
+      - name: Build iOS (no codesign)
+        script: flutter build ios --release --no-codesign
+    artifacts:
+      - build/ios/iphoneos/*.app
